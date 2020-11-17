@@ -44,19 +44,24 @@ def generate_tensor(shape, cluster_count=3, cluster_radius=3, low=0, high=255, e
 
     tensor = np.zeros(shape, dtype)
 
+    clusters = []
     for i in range(cluster_count + 1):
-        # cluster = {}
+        cluster = {}
 
         coordinates = []
         for dim in shape:
             coordinate = np.random.randint(0, high=dim)
             coordinates.append(coordinate)
 
+        cluster['coordinates'] = coordinate
         coordinates = tuple(coordinates)
 
         mask = generate_mask(shape, coordinates, cluster_radius)
 
         point_value = np.random.randint(low=low, high=high, size=1)
+
+        cluster['center_value'] = point_value
+        cluster['radius'] = cluster_radius
 
         random_values = np.random.randint(low=point_value-eps, high=point_value+eps+1, size=shape)
         random_values_masked = np.ma.array(random_values, mask=np.logical_not(mask))
@@ -64,8 +69,6 @@ def generate_tensor(shape, cluster_count=3, cluster_radius=3, low=0, high=255, e
         idx = (mask > 0)
         tensor[idx] = random_values_masked[idx]
 
-        print(tensor)
-
-    return tensor
+    return tensor, clusters
 
 
